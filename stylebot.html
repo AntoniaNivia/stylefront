@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StyleBot - Assistente Virtual</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="css/stylebot.css">
+    <link rel="stylesheet" href="css/sidebar.css">
+</head>
+<body>
+    <!-- Botão de toggle da sidebar para mobile -->
+    <button class="sidebar-toggle" id="sidebarToggle">
+        <i class="fas fa-bars"></i>
+    </button>
+    
+    <!-- Sidebar global -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <img src="imagens/logo-form.png" alt="StyleHub Logo">
+            <button class="sidebar-close" id="sidebarClose">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        
+        <!-- Perfil do usuário na sidebar -->
+        <div class="user-profile">
+            <div class="user-avatar">
+                <img src="imagens/default.png" alt="Avatar do usuário" id="sidebarUserAvatar">
+            </div>
+            <div class="user-info">
+                <p class="user-name" id="sidebarUserName">Usuário</p>
+                <p class="user-role">Membro</p>
+            </div>
+        </div>
+        
+        <div class="sidebar-content">
+            <ul class="sidebar-menu">
+                <li><a href="index.html"><i class="fas fa-home"></i> Início</a></li>
+                <li><a href="formulario.html"><i class="fas fa-clipboard-list"></i> Preferências</a></li>
+                <li><a href="camera.html"><i class="fas fa-camera"></i> Visualizador AR</a></li>
+                <li><a href="perfil.html"><i class="fas fa-user"></i> Perfil</a></li>
+                <li><a href="stylebot.html" class="active"><i class="fas fa-robot"></i> StyleBot</a></li>
+                <li><a href="tutorial.html"><i class="fas fa-question-circle"></i> Tutorial</a></li>
+                <li><a href="#" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Sair</a></li>
+            </ul>
+        </div>
+        
+        <div class="sidebar-footer">
+            &copy; 2023 Style App - Todos os direitos reservados
+        </div>
+    </aside>
+    
+    <div class="main-content">
+
+        <!-- Chat principal -->
+        <main class="chat-container">
+            <div class="chat-box" id="chatBox">
+                <div class="bot-message">
+                    <p>👋 Olá! Sou o StyleBot, seu assistente virtual. Escolha uma opção no menu ou me pergunte algo.</p>
+                </div>
+            </div>
+            <div class="input-area">
+                <input type="text" id="userInput" placeholder="Digite sua mensagem...">
+                <button onclick="sendMessage()">Enviar</button>
+            </div>
+        </main>
+    </div>
+
+    <script type="module" src="js/stylebot.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Verificar autenticação
+            const token = localStorage.getItem('token');
+            if (!token) {
+                window.location.href = 'entrar.html';
+            }
+            
+            // Carregar dados do usuário para a sidebar
+            const userData = JSON.parse(localStorage.getItem('userData'));
+            if (userData) {
+                const userNameElement = document.getElementById('sidebarUserName');
+                const userAvatarElement = document.getElementById('sidebarUserAvatar');
+                
+                if (userNameElement) {
+                    userNameElement.textContent = userData.name || 'Usuário';
+                }
+                
+                if (userAvatarElement && userData.profileImage) {
+                    userAvatarElement.src = userData.profileImage;
+                }
+            }
+            
+            // Configurar logout
+            document.getElementById('logoutBtn').addEventListener('click', function(e) {
+                e.preventDefault();
+                localStorage.removeItem('token');
+                localStorage.removeItem('userData');
+                window.location.href = 'entrar.html';
+            });
+        });
+    </script>
+    <script src="js/sidebar.js"></script>
+</body>
+</html>

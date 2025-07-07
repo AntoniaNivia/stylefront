@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Style | Entrar ou Cadastrar</title>
+    <link rel="stylesheet" href="https://cdn.materialdesignicons.com/5.4.55/css/materialdesignicons.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/entrar.css">
+    <link rel="stylesheet" href="css/estilos.css">
+    <!-- Remova qualquer importação do arquivo entrar.js se existir -->
+    <style>
+        /* Estilos para o loader */
+        .loader-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: auto;
+            height: auto;
+            background-color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            visibility: hidden;
+            opacity: 0;
+            transition: opacity 0.3s, visibility 0.3s;
+            border-radius: 8px;
+            padding: 10px 15px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        .loader-container.show {
+            visibility: visible;
+            opacity: 1;
+        }
+        
+        .loader {
+            width: 24px;
+            height: 24px;
+            border: 3px solid #f3f3f3;
+            border-radius: 50%;
+            border-top-color: #6C5CE7;
+            animation: spin 1s linear infinite;
+            margin-right: 10px;
+        }
+        
+        .loader-text {
+            font-size: 14px;
+            color: #2D3436;
+            font-weight: 500;
+        }
+        
+        .button-loader {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s linear infinite;
+            margin-right: 8px;
+            display: none;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+
+<body class="cadastro">
+<img src="imagens/logo-form.png">
+<div class="container" id="container">
+  <div class="form-container sign-up-container">
+    <form>
+      <h1>Criar Conta</h1>
+      <div class="social-container">
+        <a href="#" class="social"><img src="imagens/google.webp" alt="Google" class="social-icon"></a>
+        <a href="#" class="social"><img src="imagens/apple.png" alt="Apple" class="social-icon"></a>
+        <a href="#" class="social"><img src="imagens/github.png" alt="GitHub" class="social-icon"></a>
+      </div>
+      <span>ou use seu e-mail para se cadastrar</span>
+      <div class="input-box">
+        <input id="name" type="text" placeholder="Nome" required>
+        <i class="mdi mdi-account"></i>
+    </div>
+    <div class="input-box">
+        <input id="email" type="email" placeholder="Email" required>
+        <i class="mdi mdi-email"></i>
+    </div>
+    <div class="input-box">
+        <input id="password" type="password" placeholder="Senha" required>
+        <i class="mdi mdi-lock"></i>
+    </div>
+    <button onclick="register()" type="button" class="btn" id="registerBtn">
+        <span class="button-loader" id="registerLoader"></span>Cadastre-se
+    </button>
+    </form>
+  </div>
+  <div class="form-container sign-in-container">
+    <form action="#">
+      <h1>Login</h1>
+      <div class="social-container">
+        <a href="#" class="social"><img src="imagens/google.webp" alt="Google" class="social-icon"></a>
+        <a href="#" class="social"><img src="imagens/apple.png" alt="Apple" class="social-icon"></a>
+        <a href="#" class="social"><img src="imagens/github.png" alt="GitHub" class="social-icon"></a>
+      </div>
+      <span>ou use sua conta</span>
+      <input type="email" id="e-mail" placeholder="Email" />
+      <input type="password" id="senha" placeholder="Senha" />
+      <button onclick="login()" type="button" class="btn" id="loginBtn">
+        <span class="button-loader" id="loginLoader"></span>Entrar
+      </button>
+      <a href="#">Esqueceu sua senha?</a>
+    </form>
+  </div>
+  <div class="overlay-container">
+    <div class="overlay">
+      <div class="overlay-panel overlay-left">
+        <h1>Bem-vindo de Volta!</h1>
+        <p>Para se manter conectado conosco, faça login com suas informações pessoais</p>
+        <button class="ghost" id="signIn">Entrar</button>
+      </div>
+      <div class="overlay-panel overlay-right">
+        <h1>Olá!</h1>
+        <p>Insira seus dados pessoais e crie seu estilo conosco</p>
+        <button class="ghost" id="signUp">Cadastre-se</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Loader global -->
+<div class="loader-container" id="loaderContainer">
+    <div class="loader"></div>
+    <span class="loader-text" id="loaderText">Carregando...</span>
+</div>
+
+<script type="module">
+    console.log('Script de entrar.html carregado');
+    
+    // Importar configuração da API
+    import { API_URL } from './js/config.js';
+    
+    const signUpButton = document.getElementById('signUp');
+    const signInButton = document.getElementById('signIn');
+    const container = document.getElementById('container');
+
+    signUpButton.addEventListener('click', () => {
+        container.classList.add('right-panel-active');
+    });
+
+    signInButton.addEventListener('click', () => {
+        container.classList.remove('right-panel-active');
+    });
+
+    // Função para realizar login
+    window.login = async function() {
+        console.log('Função de login chamada');
+        const email = document.getElementById('e-mail').value;
+        const password = document.getElementById('senha').value;
+        console.log('Email:', email, 'Senha:', password);
+
+        // Validação básica
+        if (!email || !password) {
+            alert('Por favor, preencha todos os campos');
+            return;
+        }
+
+        // Mostrar loader global com texto específico e no botão
+        document.getElementById('loaderText').textContent = 'Fazendo login...';
+        document.getElementById('loaderContainer').classList.add('show');
+        const loginBtn = document.getElementById('loginBtn');
+        const loginLoader = document.getElementById('loginLoader');
+        loginLoader.style.display = 'inline-block';
+        loginBtn.disabled = true;
+
+        try {
+            const response = await fetch(`${API_URL}/auth/login`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ email, password })
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.message || 'Erro ao fazer login');
+            }
+
+            // Salvar token e dados do usuário no localStorage
+            localStorage.setItem('token', data.token);
+            localStorage.setItem('userData', JSON.stringify(data.user));
+
+            console.log('Login realizado com sucesso');
+            // Redirecionar para a página de perfil
+            window.location.href = 'perfil.html';
+        } catch (error) {
+            console.error('Erro no login:', error);
+            alert(error.message);
+            
+            // Esconder loader global e no botão em caso de erro
+            document.getElementById('loaderContainer').classList.remove('show');
+            loginLoader.style.display = 'none';
+            loginBtn.disabled = false;
+        }
+    }
+
+    // Função para registrar novo usuário
+    window.register = async function() {
+        console.log('Função de registro chamada');
+        const name = document.getElementById('name').value;
+        const username = name.toLowerCase().replace(/\s+/g, '_'); // Criar username a partir do nome
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+        console.log('Nome:', name, 'Email:', email, 'Senha:', password);
+
+        // Validação básica
+        if (!name || !email || !password) {
+            alert('Por favor, preencha todos os campos');
+            return;
+        }
+
+        // Mostrar loader global com texto específico e no botão
+        document.getElementById('loaderText').textContent = 'Criando sua conta...';
+        document.getElementById('loaderContainer').classList.add('show');
+        const registerBtn = document.getElementById('registerBtn');
+        const registerLoader = document.getElementById('registerLoader');
+        registerLoader.style.display = 'inline-block';
+        registerBtn.disabled = true;
+
+        try {
+            const response = await fetch(`${API_URL}/auth/register`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ name, username, email, password })
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.message || 'Erro ao registrar');
+            }
+
+            // Salvar token e dados do usuário no localStorage
+            localStorage.setItem('token', data.token);
+            localStorage.setItem('userData', JSON.stringify(data.user));
+
+            console.log('Cadastro realizado com sucesso');
+            // Redirecionar para a página de formulário
+            window.location.href = 'formulario.html';
+        } catch (error) {
+            console.error('Erro no cadastro:', error);
+            alert(error.message);
+            
+            // Esconder loader global e no botão em caso de erro
+            document.getElementById('loaderContainer').classList.remove('show');
+            registerLoader.style.display = 'none';
+            registerBtn.disabled = false;
+        }
+    }
+</script>
+
+
+<!-- Console de depuração removido -->
+</body>
+
+</html>
